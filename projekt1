@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include<string.h>
+#include<ctype.h>
+
+
+char zvacsenie_pismena(char pismeno)
+{
+    char velke;
+    if(pismeno > 57)
+    {
+        velke = toupper(pismeno);
+        return velke;
+    }
+    else
+    {
+        return pismeno;
+    }
+}
+
+
+void zvyraznenie_slova(char* arg, char* buffer, int index)
+{
+    for(long unsigned int i = 0; i < strlen(arg); i++)
+    {
+        buffer[index + i] = zvacsenie_pismena(buffer[index + i]);
+    }
+}
+
+
+int searching(char* buffer, char* arg,char** pismena)
+{
+    int najdenie = 0;
+    unsigned long int counter = 0;
+    for(unsigned long int i = 0;  i < (strlen(buffer) - (strlen(arg)) + 1); i++)
+    {
+        for(unsigned long j = 0; j < strlen(arg); j++)
+        {           
+            if(strchr(pismena[(int)(arg[j]) - '0'],buffer[i+counter]) != NULL)
+                {
+                    counter++;
+                    if(counter == strlen(arg))
+                        {
+                            zvyraznenie_slova(arg,buffer,i);
+                            printf("%s", buffer);
+                            najdenie++;
+                            counter = 0;
+                            break;
+                        }
+                }
+            else
+                {
+                    counter = 0;
+                    break;
+                }    
+        }
+    }
+    return najdenie;
+}
+
+
+int main(int argc, char *argv[]){
+    (void) argc;
+    char buffer[100] = {'\0'};
+    int cnt = 0;
+    int najdene = 0;
+
+    char* pismena[10];
+    pismena[0] = "0+";
+    pismena[1] = "1\0";
+    pismena[2] = "2abc";
+    pismena[3] = "3def";
+    pismena[4] = "4ghi";
+    pismena[5] = "5jkl";
+    pismena[6] = "6mno";
+    pismena[7] = "7pqrs";
+    pismena[8] = "8tuv";
+    pismena[9] = "9wxyz";
+                  
+    while(!feof(stdin))
+    {
+        int c = fgetc(stdin);
+        if(c != '\n')
+        {
+            sprintf(buffer + strlen(buffer), "%c",tolower(c));
+        }
+        else
+        {
+            cnt++;
+            if(cnt == 1)
+            {
+                sprintf(buffer + strlen(buffer), "%s", ", ");
+            }
+            else
+            {
+                sprintf(buffer + strlen(buffer), "%c", '\n');
+                if(searching(buffer, argv[1], pismena) != NULL)
+                {
+                    printf("%s", buffer);
+                    najdene++;
+                }
+                searching(buffer, argv[1], pismena);
+                memset(buffer, '\0', 100);
+                cnt = 0;
+            }
+        } 
+    }
+
+    if(najdene == 0)
+    {
+        printf("Kontakt(y) nenalezen(y)\n");
+    }
+    return 0;
+    }
